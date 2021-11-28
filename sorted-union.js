@@ -23,7 +23,7 @@ function uniteUnique(arr) {
 
     console.log(newArr);
 
-    return arr;
+    return newArr;
 }
 
 uniteUnique([1, 3, 2], [5, 2, 1, 4], [2, 1]);
