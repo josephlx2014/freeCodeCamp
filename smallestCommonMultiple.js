@@ -8,49 +8,55 @@ is also evenly divisible by all numbers between 1 and 3. The answer here would b
 
 function smallestCommons(arr) {
 
-    //1,2,3    
-
-    //1,2,3,4,5,6
-    //2,4,6
-    //3,6
-
     let sortedArr = arr.sort(compare);
+    let sortedMultiplesArr = [];
     let multiple = 0;
-    //console.log(sortedArr[1]);
     let multiplesArr = [];
 
+    //get multiples
+    for (let x = sortedArr[0]; x <= sortedArr[1]; x++) {
 
-    for (let x = 0; x <= sortedArr[1]; x++) {
+        for (let y = sortedArr[0]; y <= sortedArr[1]; y++) {
 
-        for (let y = 0; y <= sortedArr[1]; y++) {
-
-            multiple = x * y; // x + "*" + y + " = " + x * y;
+            multiple = x * y;
 
             multiplesArr.push(multiple);
 
         }
-
     }
 
-    let mcms = [];
-    for (let x = 0; x < sortedArr[1]; x++) {
+    //remove duplicates
+    let uniqueMultiples = []
 
-        for (let y = 0; y < multiplesArr.length; y++) {
+    for (let y = 0; y < multiplesArr.length; y++) {
 
-            //console.log(x % multiplesArr[y]);
-            if (x % multiplesArr[y] === 0) {
+        if (uniqueMultiples.indexOf(multiplesArr[y]) === -1) {
 
-                mcms.push(multiplesArr[y]);
+            uniqueMultiples.push(multiplesArr[y]);
 
-            }
         }
 
     }
 
-    console.log(multiplesArr);
+    console.log(uniqueMultiples);
+
+    ///sortedMultiplesArr = multiplesArr.sort(compare);
+
+    // find the least common multiple
+    for (let z = 0; z < uniqueMultiples.length; z++) {
+
+        for (let d = 0; d < sortedArr.length; d++) {
+
+            console.log(uniqueMultiples[z] + " - " + sortedArr[d]);
+
+        }
+    }
+
+    //console.log(multiplesArr);
 
     return arr;
 }
+
 
 function compare(a, b) {
     if (a < b) {
