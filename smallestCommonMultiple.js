@@ -7,28 +7,20 @@ function smallestCommons(arr) {
 
     let multiplesArr = [];
 
-   
-
-    for(let x = startRange; x <= endRange; x++){
-    let mcmObj = {
-      "num": x,
-      "multiples": []
-    }
-        
-        for(let y=startRange; y <= x; y++){
+    for(let x = 0; x <= endRange; x++){
+        //obj.num = x;
+        for(let y=0; y <= x; y++){
 
             if (x % y === 0){
-                mcmObj.multiples.push(y);
-                
+               
+                multiplesArr.push(y);
                 //console.log(x + " " + y);
 
             }
-        multiplesArr.push(mcmObj);
+
         }
     }
 
-
-    
     let uniqueMultiples =  [];
 
     for(let y=0; y < multiplesArr.length; y++){
@@ -60,4 +52,5 @@ function compare(a, b) {
     return 0;
 }
 
-smallestCommons([1,10]);
+smallestCommons([1,3]);
+
