@@ -1,7 +1,11 @@
 function smallestCommons(arr) {
 
-    let num1 = arr[0];
-    let num2 = arr[1];
+    let sortedArr = arr.sort(compare);
+
+    console.log(sortedArr);
+
+    let num1 = sortedArr[0];
+    let num2 = sortedArr[1];
     let maxMultiple = 1;
 
     for (let x = num1; x <= num2; x++) {
@@ -12,7 +16,6 @@ function smallestCommons(arr) {
 
     let currMultiple = 1;
     let qtyOfNumbersInRange = num2 - num1;
-    let lcm = 1;
     let counter = 1;
 
 
@@ -28,38 +31,44 @@ function smallestCommons(arr) {
 
             if (currMultiple % x === 0) {
 
-                console.log(x + " " + currMultiple + " " + "yes");
+                //console.log(x + " " + currMultiple + " " + "yes");
 
                 matchCounter++;
 
 
             } else {
 
-                console.log(x + " " + currMultiple + " " + "no");
+                //console.log(x + " " + currMultiple + " " + "no");
 
             }
 
             if (matchCounter === qtyOfNumbersInRange) {
 
-                console.log("lcm " + currMultiple);
+                //console.log("lcm " + currMultiple);
                 return currMultiple;
             }
 
         }
 
-        console.log("-----------");
+        //console.log("-----------");
         counter++;
 
     }
 
-
-
-
-    //console.log(maxMultiple);
-
-
-
-    return arr;
 }
 
-smallestCommons([1, 3]);
+function compare(a, b) {
+    if (a < b) {
+        return -1;
+    }
+    if (a > b) {
+        return 1;
+    }
+    // a must be equal to b
+    return 0;
+}
+
+//smallestCommons([1, 3]);
+//smallestCommons([2, 10]);
+//smallestCommons([1, 13]);
+smallestCommons([23, 18]);
