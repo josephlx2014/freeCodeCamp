@@ -45,23 +45,37 @@ function palindrome(str) {
 
 function stringSanitizer(str) {
 
-    const regex = /\W|[_]/g
+    const regex = /[A-Z0-9]/
+    const upperCStr = str.toUpperCase();
+    //console.log(upperCStr);
+
+
+    let newStrArr = [];
     let newStr = "";
 
-    for (let x = 0; x < str.length; x++) {
+    //console.log(upperCStr.length);
 
-        if (!regex.test(str[x])) {
+    for (let x = 0; x < upperCStr.length; x++) {
 
-            newStr += str[x];
+        //console.log(upperCStr[x] + " test " + regex.test(upperCStr[x]));
+
+        let testResult = regex.test(upperCStr[x]);
+        //console.log(upperCStr[x] + " test " + regex.test(upperCStr[x]));
+
+        if (testResult === true) {
+
+            //console.log(upperCStr[x] + " test " + testResult);
+
+            newStrArr.push(upperCStr[x]);
 
         }
 
     }
+    newStr = newStrArr.join("");
 
     return newStr;
-
 }
 
-console.log(stringSanitizer("_eye"));
-console.log(stringSanitizer("0_0 (: /-\ :) 0-0"));
-//console.log(palindrome("zaepeax"));
+//console.log(stringSanitizer("_eye"));
+//console.log(stringSanitizer("0_0 (: /-\ :) 0-0"));
+console.log(stringSanitizer("zaepeaz"));
