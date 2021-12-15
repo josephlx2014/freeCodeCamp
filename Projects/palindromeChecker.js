@@ -1,6 +1,8 @@
 function palindrome(str) {
 
-    let strLenght = str.length;
+
+    let validatedStr = stringSanitizer(str);
+    let strLenght = validatedStr.length;
 
     if (strLenght % 2 === 0) {
 
@@ -9,9 +11,9 @@ function palindrome(str) {
 
             let y = (strLenght - 1) - x;
 
-            console.log(str[x] + " === " + str[y] + " = " + (str[x] === str[y]));
+            //console.log(validatedStr[x] + " === " + validatedStr[y] + " = " + (validatedStr[x] === validatedStr[y]));
 
-            if (str[x] != str[y]) {
+            if (validatedStr[x] != validatedStr[y]) {
 
 
                 return false;
@@ -29,7 +31,7 @@ function palindrome(str) {
 
             let y = (strLenght - 1) - x;
 
-            if (str[x] != str[y]) {
+            if (validatedStr[x] != validatedStr[y]) {
 
 
                 return false;
@@ -76,6 +78,6 @@ function stringSanitizer(str) {
     return newStr;
 }
 
-//console.log(stringSanitizer("_eye"));
-//console.log(stringSanitizer("0_0 (: /-\ :) 0-0"));
-console.log(stringSanitizer("zaepeaz"));
+console.log(palindrome("_eye"));
+console.log(palindrome("0_0 (: /-\ :) 0-0"));
+//console.log(stringSanitizer("zaepeaz"));
