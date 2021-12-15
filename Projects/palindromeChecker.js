@@ -8,8 +8,6 @@ function palindrome(str) {
         for (let x = 0; x < strLenght; x++) {
 
             let y = (strLenght - 1) - x;
-            //console.log("x:" + x + " -- y:" + y);
-            //console.log(y);
 
             console.log(str[x] + " === " + str[y] + " = " + (str[x] === str[y]));
 
@@ -30,9 +28,6 @@ function palindrome(str) {
         for (let x = 0; x < halfStrLength; x++) {
 
             let y = (strLenght - 1) - x;
-            //console.log("x:" + x + " -- y:" + y);
-
-            //console.log(str[x] + " === " + str[y] + " = " + (str[x] === str[y]));
 
             if (str[x] != str[y]) {
 
@@ -43,11 +38,30 @@ function palindrome(str) {
 
         }
 
-
     }
-
 
     return true;
 }
 
-console.log(palindrome("zaepeax"));
+function stringSanitizer(str) {
+
+    const regex = /\W|[_]/g
+    let newStr = "";
+
+    for (let x = 0; x < str.length; x++) {
+
+        if (!regex.test(str[x])) {
+
+            newStr += str[x];
+
+        }
+
+    }
+
+    return newStr;
+
+}
+
+console.log(stringSanitizer("_eye"));
+console.log(stringSanitizer("0_0 (: /-\ :) 0-0"));
+//console.log(palindrome("zaepeax"));
