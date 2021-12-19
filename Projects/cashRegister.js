@@ -3,6 +3,7 @@ function checkCashRegister(price, cash, cid) {
     let outputObj = { status: "", change: [] };
     const change = cash - price;
 
+    //values of each bill/coin
     let currencyValue = [
         { unit: "ONE HUNDRED", amount: 100 },
         { unit: "TWENTY", amount: 20 },
@@ -15,48 +16,39 @@ function checkCashRegister(price, cash, cid) {
         { unit: "PENNY", amount: 0.01 },
     ]
 
+    //get sum
     const sumOfCID = cid.reduce((sum, currentAmmount) => {
-
         sum += currentAmmount[1];
         return sum;
-
     }, 0);
 
     let sumOfCashDrawer = sumOfCID.toFixed(2);
 
-    //reformats cash in drawer array
-    /*
-    const remapedCID = cid.map((obj, ind, cid) => {
-        let rObj = {}
-            //rObj[cid[ind][0]] = cid[ind][1]
-        rObj["unit"] = cid[ind][0]
-        rObj["available"] = cid[ind][1]
-        rObj["value"] = currencyValue.filter(item => item.unit === cid[ind][0])[0].amount; //currencyValue.reduce((x) => x.unit === cid[ind][0]).amount
-        return rObj
-    });*/
-
+    //reformat CID array to operate
     const remapedCID = cid.map((obj, ind, cid) => {
         obj = {};
 
         obj["unit"] = cid[ind][0]
         obj["available"] = cid[ind][1]
-        obj["value"] = currencyValue.filter(item => item.unit === cid[ind][0])[0].amount; //currencyValue.reduce((x) => x.unit === cid[ind][0]).amount
+        obj["value"] = currencyValue.filter(item => item.unit === cid[ind][0])[0].amount;
 
         return obj
     });
 
-
-
-    //let sortedRemapedCID = remapedCID.sort();
-
-    console.log(remapedCID);
-
-    //console.log(currencyValue.filter(item => item.unit === "PENNY")[0].amount)
-
-
+    //reorder array
+    let sortedRemapedCID = remapedCID.sort((a, b) => {
+        if (a.value > b.value) {
+            return -1;
+        } else if (a.value < b.value) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
 
     let stateObj = {
-        previousRemainder: change,
+        bill: "",
+        previousRemainder: 0,
         billQuantity: 0,
         newRemainder: 0,
         neededQty: 0,
@@ -65,6 +57,7 @@ function checkCashRegister(price, cash, cid) {
     }
 
     stateObj.previousRemainder = change;
+    stateObj.newRemainder = change;
 
     if (sumOfCashDrawer == 0 || change >= sumOfCashDrawer) {
 
@@ -75,41 +68,43 @@ function checkCashRegister(price, cash, cid) {
 
     } else {
 
-        for (let x = 0; x < remapedCID.length; x++) {
+        for (let x = 0; x < sortedRemapedCID.length; x++) {
 
-            console.log(stateObj.previousRemainder + " / " + remapedCID[x].value + " Divisor= " + stateObj.previousRemainder / remapedCID[x].value);
+            if (stateObj.newRemainder / sortedRemapedCID[x].value >= 1) {
 
-            /*
-                        if (stateObj.previousRemainder % remapedCID[x].value >= 1) {
+                let temp = stateObj.newRemainder; //19
 
-                            stateObj.billQuantity = Math.floor(previousRemainder / currencyValue[x])
-                            stateObj.newRemainder = previousRemainder % currencyValue[x];
-                            stateObj.neededQty = stateObj.billQuantity * currencyValue[x];
-                            stateObj.availableQty = cid
+                stateObj.previousRemainder = temp; //19
+                stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
+                stateObj.newRemainder = stateObj.previousRemainder % sortedRemapedCID[x].value;
+                stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
+                stateObj.availableQty = sortedRemapedCID[x].available;
+                stateObj.diff = stateObj.availableQty - stateObj.neededQty;
+                stateObj.bill = sortedRemapedCID[x].unit
 
+                if (stateObj.diff < 0) {
 
-                        }
-            */
+                    stateObj.billQuantity++;
+                    stateObj.newRemainder = stateObj.billQuantity + stateObj;
+
+                }
+
+                console.log(stateObj);
+            }
+
+            if (stateObj.previousRemainder === 0) {
+
+                outputObj.status = "OPEN";
+                outputObj.change = sortedRemapedCID;
+
+                return outputObj
+            }
         }
     }
-
-
 }
-/*
-checkCashRegister(19.5, 20, [
-    ["PENNY", 0.0],
-    ["NICKEL", 0],
-    ["DIME", 1.5],
-    ["QUARTER", 0],
-    ["ONE", 0],
-    ["FIVE", 0],
-    ["TEN", 10],
-    ["TWENTY", 0],
-    ["ONE HUNDRED", 0]
-])
-*/
 
-checkCashRegister(19.5, 20, [
+
+checkCashRegister(1, 20, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
     ["DIME", 3.1],
