@@ -56,55 +56,82 @@ function checkCashRegister(price, cash, cid) {
         diff: 0
     }
 
+    let cidRecord = [];
+    let newCID = [];
+
+
     stateObj.previousRemainder = change;
     stateObj.newRemainder = change;
 
-    if (sumOfCashDrawer == 0 || change >= sumOfCashDrawer) {
+    if (sumOfCashDrawer == 0 || change > sumOfCashDrawer) {
 
         outputObj.status = "INSUFFICIENT_FUNDS";
         console.log(outputObj);
 
         return outputObj
 
-    } else {
+    } else if (change <= sumOfCashDrawer) {
 
         for (let x = 0; x < sortedRemapedCID.length; x++) {
 
             if (stateObj.newRemainder / sortedRemapedCID[x].value >= 1) {
 
-                let temp = stateObj.newRemainder; //19
+                let temp = stateObj.newRemainder;
 
-                stateObj.previousRemainder = temp; //19
+                stateObj.previousRemainder = temp;
                 stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
-                stateObj.newRemainder = stateObj.previousRemainder % sortedRemapedCID[x].value;
+                stateObj.newRemainder = (stateObj.newRemainder % sortedRemapedCID[x].value).toFixed(2);
                 stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
                 stateObj.availableQty = sortedRemapedCID[x].available;
                 stateObj.diff = stateObj.availableQty - stateObj.neededQty;
                 stateObj.bill = sortedRemapedCID[x].unit
+                    /*
+                        if (stateObj.diff < 0) {
+                            console.log("se ejecuto");
+                            stateObj.billQuantity--;
+                            stateObj.newRemainder = stateObj.newRemainder + sortedRemapedCID[x].value;
+                        }
+                    */
 
-                if (stateObj.diff < 0) {
 
-                    stateObj.billQuantity++;
-                    stateObj.newRemainder = stateObj.billQuantity + stateObj;
+                while (stateObj.diff < 0) {
+
+                    stateObj.billQuantity--;
+                    stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
+                    stateObj.diff = stateObj.availableQty - stateObj.neededQty;
+
+                    /*console.log(stateObj.newRemainder + " + " + sortedRemapedCID[x].value + " = " +
+                        (parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value)))
+                    */
+                    stateObj.newRemainder = parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value);
 
                 }
 
-                console.log(stateObj);
+                //console.log(stateObj);
+
+                //console.log(stateObj);
+                cidRecord = [];
+                cidRecord.push(stateObj.bill)
+                cidRecord.push(stateObj.neededQty)
+
+                newCID.push(cidRecord);
+
             }
 
-            if (stateObj.previousRemainder === 0) {
+            //console.log(stateObj.newRemainder);
+
+            if (stateObj.newRemainder == 0) {
 
                 outputObj.status = "OPEN";
-                outputObj.change = sortedRemapedCID;
+                outputObj.change = newCID;
 
                 return outputObj
             }
         }
     }
 }
-
-
-checkCashRegister(1, 20, [
+/*
+console.log(checkCashRegister(3.26, 100, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
     ["DIME", 3.1],
@@ -114,4 +141,58 @@ checkCashRegister(1, 20, [
     ["TEN", 20],
     ["TWENTY", 60],
     ["ONE HUNDRED", 100]
-]);
+]))
+*/
+/*should return {status: "OPEN", change: 
+[
+    ["TWENTY", 60], 
+    ["TEN", 20], 
+    ["FIVE", 15], 
+    ["ONE", 1], 
+    ["QUARTER", 0.5], 
+    ["DIME", 0.2], 
+    ["PENNY", 0.04]
+]}.
+*/
+
+checkCashRegister(19.5, 20, [
+        ["PENNY", 0.01],
+        ["NICKEL", 0],
+        ["DIME", 0],
+        ["QUARTER", 0],
+        ["ONE", 1],
+        ["FIVE", 0],
+        ["TEN", 0],
+        ["TWENTY", 0],
+        ["ONE HUNDRED", 0]
+    ])
+    /*should
+return { status: "INSUFFICIENT_FUNDS", change: [] }.*/
+
+/*
+checkCashRegister(19.5, 20, [
+        ["PENNY", 0.5],
+        ["NICKEL", 0],
+        ["DIME", 0],
+        ["QUARTER", 0],
+        ["ONE", 0],
+        ["FIVE", 0],
+        ["TEN", 0],
+        ["TWENTY", 0],
+        ["ONE HUNDRED", 0]
+    ])
+    /*should
+    return {
+        status: "CLOSED",
+        change: [
+            ["PENNY", 0.5],
+            ["NICKEL", 0],
+            ["DIME", 0],
+            ["QUARTER", 0],
+            ["ONE", 0],
+            ["FIVE", 0],
+            ["TEN", 0],
+            ["TWENTY", 0],
+            ["ONE HUNDRED", 0]
+        ]
+    }.*/
