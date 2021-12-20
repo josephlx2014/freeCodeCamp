@@ -24,6 +24,7 @@ function checkCashRegister(price, cash, cid) {
 
     let sumOfCashDrawer = sumOfCID.toFixed(2);
 
+
     //reformat CID array to operate
     const remapedCID = cid.map((obj, ind, cid) => {
         obj = {};
@@ -46,6 +47,8 @@ function checkCashRegister(price, cash, cid) {
         }
     });
 
+    //console.log(checkIfTheresEnoughCashToGiveChange(change, sortedRemapedCID))
+
     let stateObj = {
         bill: "",
         previousRemainder: 0,
@@ -66,111 +69,160 @@ function checkCashRegister(price, cash, cid) {
     if (sumOfCashDrawer == 0 || change > sumOfCashDrawer) {
 
         outputObj.status = "INSUFFICIENT_FUNDS";
-        console.log(outputObj);
+        //console.log(outputObj);
 
         return outputObj
 
     } else if (change <= sumOfCashDrawer) {
 
-        for (let x = 0; x < sortedRemapedCID.length; x++) {
+        if (checkIfTheresEnoughCashToGiveChange(change, sortedRemapedCID)) {
 
-            if (stateObj.newRemainder / sortedRemapedCID[x].value >= 1) {
+            for (let x = 0; x < sortedRemapedCID.length; x++) {
 
-                let temp = stateObj.newRemainder;
+                if (stateObj.newRemainder / sortedRemapedCID[x].value >= 1) {
 
-                stateObj.previousRemainder = temp;
-                stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
-                stateObj.newRemainder = (stateObj.newRemainder % sortedRemapedCID[x].value).toFixed(2);
-                stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
-                stateObj.availableQty = sortedRemapedCID[x].available;
-                stateObj.diff = stateObj.availableQty - stateObj.neededQty;
-                stateObj.bill = sortedRemapedCID[x].unit
-                    /*
-                        if (stateObj.diff < 0) {
-                            console.log("se ejecuto");
-                            stateObj.billQuantity--;
-                            stateObj.newRemainder = stateObj.newRemainder + sortedRemapedCID[x].value;
-                        }
-                    */
+                    let temp = stateObj.newRemainder;
 
+                    stateObj.previousRemainder = temp;
+                    stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
 
-                while (stateObj.diff < 0) {
+                    //console.log(sortedRemapedCID[x].value + " % " + stateObj.newRemainder + " = " + (Math.round((stateObj.newRemainder % sortedRemapedCID[x].value) * 1000) / 1000) + " actual " + parseFloat((stateObj.newRemainder % sortedRemapedCID[x].value).toFixed(2)))
+                    stateObj.newRemainder = Math.round((stateObj.newRemainder % sortedRemapedCID[x].value) * 100) / 100;
 
-                    stateObj.billQuantity--;
                     stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
+                    stateObj.availableQty = sortedRemapedCID[x].available;
                     stateObj.diff = stateObj.availableQty - stateObj.neededQty;
+                    stateObj.bill = sortedRemapedCID[x].unit
 
-                    /*console.log(stateObj.newRemainder + " + " + sortedRemapedCID[x].value + " = " +
-                        (parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value)))
-                    */
-                    stateObj.newRemainder = parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value);
+                    //console.log(stateObj);
+
+                    while (stateObj.diff < 0) {
+
+                        stateObj.billQuantity--;
+                        //console.log("stateObj.billQuantity " + stateObj.billQuantity);
+
+                        stateObj.neededQty = parseFloat((stateObj.billQuantity * parseFloat(sortedRemapedCID[x].value)).toFixed(2));
+                        //console.log("stateObj.neededQty " + stateObj.billQuantity * parseFloat(sortedRemapedCID[x].value));
+
+                        stateObj.diff = stateObj.availableQty - stateObj.neededQty;
+                        //console.log("stateObj.diff " + (stateObj.availableQty - stateObj.neededQty));
+
+
+                        if (stateObj.newRemainder < stateObj.previousRemainder) {
+
+                            //console.log(parseFloat(stateObj.newRemainder.toFixed(3)) + " + " + sortedRemapedCID[x].value + "= " + (parseFloat(stateObj.newRemainder.toFixed(3)) + sortedRemapedCID[x].value).toFixed(2))
+                            //stateObj.newRemainder = parseFloat((parseFloat(stateObj.newRemainder.toPrecision(2)) + parseFloat(sortedRemapedCID[x].value)).toFixed(2));
+                            stateObj.newRemainder = Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100;
+                        }
+
+                        //console.log("stateObj.newRemainder " + (parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value)));
+
+                        //console.log();
+                    }
+
+                    console.log(stateObj);
+
+                    cidRecord = [];
+                    cidRecord.push(stateObj.bill);
+                    cidRecord.push(stateObj.neededQty)
+
+                    newCID.push(cidRecord);
 
                 }
 
-                //console.log(stateObj);
+                //console.log(stateObj.newRemainder);
 
-                //console.log(stateObj);
-                cidRecord = [];
-                cidRecord.push(stateObj.bill)
-                cidRecord.push(stateObj.neededQty)
+                if (stateObj.newRemainder == 0) {
 
-                newCID.push(cidRecord);
+                    //console.log("c" + change + " sc " + sumOfCashDrawer)
+
+                    if (change < sumOfCashDrawer) {
+
+                        outputObj.status = "OPEN";
+
+                    } else if (change == sumOfCashDrawer) {
+
+
+                        outputObj.status = "CLOSED";
+                    }
+
+                    outputObj.change = newCID;
+
+                    console.log(outputObj)
+
+                    return outputObj
+                }
+
 
             }
 
-            //console.log(stateObj.newRemainder);
 
-            if (stateObj.newRemainder == 0) {
+        } else {
 
-                outputObj.status = "OPEN";
-                outputObj.change = newCID;
 
-                return outputObj
-            }
+            outputObj.status = "INSUFFICIENT_FUNDS";
+            outputObj.change = [];
+            return outputObj;
+
         }
+
     }
 }
-/*
-console.log(checkCashRegister(3.26, 100, [
-    ["PENNY", 1.01],
-    ["NICKEL", 2.05],
-    ["DIME", 3.1],
-    ["QUARTER", 4.25],
-    ["ONE", 90],
-    ["FIVE", 55],
-    ["TEN", 20],
-    ["TWENTY", 60],
-    ["ONE HUNDRED", 100]
-]))
-*/
-/*should return {status: "OPEN", change: 
-[
-    ["TWENTY", 60], 
-    ["TEN", 20], 
-    ["FIVE", 15], 
-    ["ONE", 1], 
-    ["QUARTER", 0.5], 
-    ["DIME", 0.2], 
-    ["PENNY", 0.04]
-]}.
-*/
 
-checkCashRegister(19.5, 20, [
-        ["PENNY", 0.01],
-        ["NICKEL", 0],
-        ["DIME", 0],
-        ["QUARTER", 0],
+
+function checkIfTheresEnoughCashToGiveChange(change, sortedRemapedCID) {
+
+    const totalInCashDrawer = sortedRemapedCID.reduce((sum, currentRecord) => {
+
+        //console.log(currentRecord);
+
+        if (currentRecord.value <= change) {
+
+            sum += currentRecord.available;
+
+        }
+
+        return sum;
+    }, 0);
+
+
+    if (totalInCashDrawer >= change) {
+
+        return true;
+
+    } else {
+
+        return false;
+
+    }
+
+    //return totalInCashDrawer;
+}
+
+/*
+checkCashRegister(3.26, 100, [
+        ["PENNY", 1.01],
+        ["NICKEL", 2.05],
+        ["DIME", 3.1],
+        ["QUARTER", 4.25],
+        ["ONE", 90],
+        ["FIVE", 55],
+        ["TEN", 20],
+        ["TWENTY", 60],
+        ["ONE HUNDRED", 100]
+    ])*/
+/*should
+return { status: "OPEN", change: [
+        ["TWENTY", 60],
+        ["TEN", 20],
+        ["FIVE", 15],
         ["ONE", 1],
-        ["FIVE", 0],
-        ["TEN", 0],
-        ["TWENTY", 0],
-        ["ONE HUNDRED", 0]
-    ])
-    /*should
-return { status: "INSUFFICIENT_FUNDS", change: [] }.*/
+        ["QUARTER", 0.5],
+        ["DIME", 0.2],
+        ["PENNY", 0.04]
+    ] }.*/
 
-/*
-checkCashRegister(19.5, 20, [
+console.log(checkCashRegister(19.5, 20, [
         ["PENNY", 0.5],
         ["NICKEL", 0],
         ["DIME", 0],
@@ -180,7 +232,7 @@ checkCashRegister(19.5, 20, [
         ["TEN", 0],
         ["TWENTY", 0],
         ["ONE HUNDRED", 0]
-    ])
+    ]))
     /*should
     return {
         status: "CLOSED",
