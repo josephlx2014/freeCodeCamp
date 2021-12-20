@@ -86,8 +86,23 @@ function checkCashRegister(price, cash, cid) {
                     stateObj.previousRemainder = temp;
                     stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
 
-                    //console.log(sortedRemapedCID[x].value + " % " + stateObj.newRemainder + " = " + (Math.round((stateObj.newRemainder % sortedRemapedCID[x].value) * 1000) / 1000) + " actual " + parseFloat((stateObj.newRemainder % sortedRemapedCID[x].value).toFixed(2)))
-                    stateObj.newRemainder = Math.round((stateObj.newRemainder % sortedRemapedCID[x].value) * 100) / 100;
+                    //console.log((sortedRemapedCID[x].value * 100) + " % " + (stateObj.newRemainder * 100) + " = " + Math.round((((sortedRemapedCID[x].value) % (stateObj.newRemainder * 100) * 100) / 100) * 100) / 100)
+
+                    //stateObj.newRemainder = Math.round((((stateObj.newRemainder * 100) % (sortedRemapedCID[x].value) * 100) / 100) * 100) / 100;
+
+                    //console.log("(stateObj.newRemainder * 100)" + (stateObj.newRemainder * 100) + " % (sortedRemapedCID[x].value * 100) " + (sortedRemapedCID[x].value * 100) + " = " + (stateObj.newRemainder * 100) % (sortedRemapedCID[x].value * 100))
+
+                    //made this fix because of some weird behaviour of the modulo operator with decimal dividend and divisor
+                    if (stateObj.newRemainder < 1) {
+
+                        stateObj.newRemainder = ((stateObj.newRemainder * 100) % (sortedRemapedCID[x].value * 100)) / 100;
+                        //console.log(stateObj.newRemainder);
+
+                    } else {
+
+                        stateObj.newRemainder = Math.round(((stateObj.newRemainder % sortedRemapedCID[x].value) * 100)) / 100;
+                        console.log(stateObj.newRemainder);
+                    }
 
                     stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
                     stateObj.availableQty = sortedRemapedCID[x].available;
@@ -107,12 +122,12 @@ function checkCashRegister(price, cash, cid) {
                         stateObj.diff = stateObj.availableQty - stateObj.neededQty;
                         //console.log("stateObj.diff " + (stateObj.availableQty - stateObj.neededQty));
 
-
                         if (stateObj.newRemainder < stateObj.previousRemainder) {
 
-                            //console.log(parseFloat(stateObj.newRemainder.toFixed(3)) + " + " + sortedRemapedCID[x].value + "= " + (parseFloat(stateObj.newRemainder.toFixed(3)) + sortedRemapedCID[x].value).toFixed(2))
+                            console.log((Math.round(stateObj.newRemainder * 100) / 100) + " + " + sortedRemapedCID[x].value + " = " + Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100);
                             //stateObj.newRemainder = parseFloat((parseFloat(stateObj.newRemainder.toPrecision(2)) + parseFloat(sortedRemapedCID[x].value)).toFixed(2));
                             stateObj.newRemainder = Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100;
+                            //stateObj.newRemainder = Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100;
                         }
 
                         //console.log("stateObj.newRemainder " + (parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value)));
@@ -148,7 +163,7 @@ function checkCashRegister(price, cash, cid) {
 
                     outputObj.change = newCID;
 
-                    console.log(outputObj)
+                    //console.log(outputObj)
 
                     return outputObj
                 }
@@ -200,7 +215,7 @@ function checkIfTheresEnoughCashToGiveChange(change, sortedRemapedCID) {
 }
 
 /*
-checkCashRegister(3.26, 100, [
+console.log(checkCashRegister(3.26, 100, [
         ["PENNY", 1.01],
         ["NICKEL", 2.05],
         ["DIME", 3.1],
@@ -210,7 +225,7 @@ checkCashRegister(3.26, 100, [
         ["TEN", 20],
         ["TWENTY", 60],
         ["ONE HUNDRED", 100]
-    ])*/
+    ]))*/
 /*should
 return { status: "OPEN", change: [
         ["TWENTY", 60],
@@ -221,6 +236,7 @@ return { status: "OPEN", change: [
         ["DIME", 0.2],
         ["PENNY", 0.04]
     ] }.*/
+
 
 console.log(checkCashRegister(19.5, 20, [
         ["PENNY", 0.5],
