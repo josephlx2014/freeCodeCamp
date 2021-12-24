@@ -1,0 +1,15 @@
+main {
+    text-align: center;
+}
+
+article {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+img {
+    height: auto;
+    display: block;
+    max-width: 100%;
+    margin: auto;
+}

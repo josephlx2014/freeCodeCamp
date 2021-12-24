@@ -69,7 +69,6 @@ function checkCashRegister(price, cash, cid) {
     if (sumOfCashDrawer == 0 || change > sumOfCashDrawer) {
 
         outputObj.status = "INSUFFICIENT_FUNDS";
-        //console.log(outputObj);
 
         return outputObj
 
@@ -86,22 +85,13 @@ function checkCashRegister(price, cash, cid) {
                     stateObj.previousRemainder = temp;
                     stateObj.billQuantity = Math.floor(stateObj.newRemainder / sortedRemapedCID[x].value)
 
-                    //console.log((sortedRemapedCID[x].value * 100) + " % " + (stateObj.newRemainder * 100) + " = " + Math.round((((sortedRemapedCID[x].value) % (stateObj.newRemainder * 100) * 100) / 100) * 100) / 100)
-
-                    //stateObj.newRemainder = Math.round((((stateObj.newRemainder * 100) % (sortedRemapedCID[x].value) * 100) / 100) * 100) / 100;
-
-                    //console.log("(stateObj.newRemainder * 100)" + (stateObj.newRemainder * 100) + " % (sortedRemapedCID[x].value * 100) " + (sortedRemapedCID[x].value * 100) + " = " + (stateObj.newRemainder * 100) % (sortedRemapedCID[x].value * 100))
-
-                    //made this fix because of some weird behaviour of the modulo operator with decimal dividend and divisor
                     if (stateObj.newRemainder < 1) {
 
                         stateObj.newRemainder = ((stateObj.newRemainder * 100) % (sortedRemapedCID[x].value * 100)) / 100;
-                        //console.log(stateObj.newRemainder);
 
                     } else {
 
                         stateObj.newRemainder = Math.round(((stateObj.newRemainder % sortedRemapedCID[x].value) * 100)) / 100;
-                        console.log(stateObj.newRemainder);
                     }
 
                     stateObj.neededQty = stateObj.billQuantity * sortedRemapedCID[x].value;
@@ -109,33 +99,18 @@ function checkCashRegister(price, cash, cid) {
                     stateObj.diff = stateObj.availableQty - stateObj.neededQty;
                     stateObj.bill = sortedRemapedCID[x].unit
 
-                    //console.log(stateObj);
-
                     while (stateObj.diff < 0) {
 
                         stateObj.billQuantity--;
-                        //console.log("stateObj.billQuantity " + stateObj.billQuantity);
-
                         stateObj.neededQty = parseFloat((stateObj.billQuantity * parseFloat(sortedRemapedCID[x].value)).toFixed(2));
-                        //console.log("stateObj.neededQty " + stateObj.billQuantity * parseFloat(sortedRemapedCID[x].value));
-
                         stateObj.diff = stateObj.availableQty - stateObj.neededQty;
-                        //console.log("stateObj.diff " + (stateObj.availableQty - stateObj.neededQty));
 
                         if (stateObj.newRemainder < stateObj.previousRemainder) {
 
                             console.log((Math.round(stateObj.newRemainder * 100) / 100) + " + " + sortedRemapedCID[x].value + " = " + Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100);
-                            //stateObj.newRemainder = parseFloat((parseFloat(stateObj.newRemainder.toPrecision(2)) + parseFloat(sortedRemapedCID[x].value)).toFixed(2));
                             stateObj.newRemainder = Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100;
-                            //stateObj.newRemainder = Math.round(((Math.round(stateObj.newRemainder * 100) / 100) + sortedRemapedCID[x].value) * 100) / 100;
                         }
-
-                        //console.log("stateObj.newRemainder " + (parseFloat(stateObj.newRemainder) + parseFloat(sortedRemapedCID[x].value)));
-
-                        //console.log();
                     }
-
-                    console.log(stateObj);
 
                     cidRecord = [];
                     cidRecord.push(stateObj.bill);
@@ -145,32 +120,24 @@ function checkCashRegister(price, cash, cid) {
 
                 }
 
-                //console.log(stateObj.newRemainder);
-
                 if (stateObj.newRemainder == 0) {
-
-                    //console.log("c" + change + " sc " + sumOfCashDrawer)
 
                     if (change < sumOfCashDrawer) {
 
                         outputObj.status = "OPEN";
+                        outputObj.change = newCID;
 
                     } else if (change == sumOfCashDrawer) {
 
-
                         outputObj.status = "CLOSED";
+                        outputObj.change = cid;
+
                     }
-
-                    outputObj.change = newCID;
-
-                    //console.log(outputObj)
 
                     return outputObj
                 }
 
-
             }
-
 
         } else {
 
