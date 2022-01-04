@@ -1,45 +1,62 @@
+/*
+Find the smallest common multiple of the provided parameters that can be evenly divided by both, 
+as well as by all sequential numbers in the range between these parameters.
+The range will be an array of two numbers that will not necessarily be in numerical order.
+For example, if given 1 and 3, find the smallest common multiple of both 1 and 3 that 
+is also evenly divisible by all numbers between 1 and 3. The answer here would be 6.
+*/
+
 function smallestCommons(arr) {
 
-    let sortedRangeArr = arr.sort(compare);
-
-    let startRange = arr[0];
-    let endRange = arr[1];
-
+    let sortedArr = arr.sort(compare);
+    let sortedMultiplesArr = [];
+    let multiple = 0;
     let multiplesArr = [];
 
-    for(let x = 0; x <= endRange; x++){
-        //obj.num = x;
-        for(let y=0; y <= x; y++){
+    //get multiples
+    for (let x = sortedArr[0]; x <= sortedArr[1]; x++) {
 
-            if (x % y === 0){
-               
-                multiplesArr.push(y);
-                //console.log(x + " " + y);
+        for (let y = sortedArr[0]; y <= sortedArr[1]; y++) {
 
-            }
+            multiple = x * y;
+
+            multiplesArr.push(multiple);
 
         }
     }
 
-    let uniqueMultiples =  [];
+    //remove duplicates
+    let uniqueMultiples = []
 
-    for(let y=0; y < multiplesArr.length; y++){
+    for (let y = 0; y < multiplesArr.length; y++) {
 
-        if(uniqueMultiples.indexOf(multiplesArr[y]) === -1){
+        if (uniqueMultiples.indexOf(multiplesArr[y]) === -1) {
 
             uniqueMultiples.push(multiplesArr[y]);
 
         }
 
     }
+
     console.log(uniqueMultiples);
 
-    let mcm = 0;
-    
+    ///sortedMultiplesArr = multiplesArr.sort(compare);
 
+    // find the least common multiple
+    for (let z = 0; z < uniqueMultiples.length; z++) {
 
-  return arr;
+        for (let d = 0; d < sortedArr.length; d++) {
+
+            console.log(uniqueMultiples[z] + " - " + sortedArr[d]);
+
+        }
+    }
+
+    //console.log(multiplesArr);
+
+    return arr;
 }
+
 
 function compare(a, b) {
     if (a < b) {
@@ -52,5 +69,5 @@ function compare(a, b) {
     return 0;
 }
 
-smallestCommons([1,3]);
-
+smallestCommons([1, 3]);
+//smallestCommons([10, 5]);
